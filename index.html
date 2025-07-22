@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=340, initial-scale=1" />
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#fca5a5">
-
   <title>PMPML Digital Pass</title>
   <style>
     html, body {
@@ -36,6 +35,7 @@
       font-size: 14px;
       color: black;
       margin: 15px 16px 24px 16px;
+      position: relative;
     }
 
     .header-bar div:last-child {
@@ -78,7 +78,7 @@
       background-image: repeating-linear-gradient(
         to right,
         #535a67,
-        #535a67  10px,
+        #535a67 10px,
         transparent 10px,
         transparent 20px
       );
@@ -120,7 +120,7 @@
     }
 
     .info-row b, .info-row .nowrap-text {
-      font-size: 16px;
+      font-size: 18px;
       color: #000;
       white-space: nowrap;
       overflow: hidden;
@@ -182,7 +182,7 @@
 
     .qr-btn {
       margin-top: 15px;
-      margin-bottom: 20px; /* ✅ 20px from bottom */
+      margin-bottom: 20px;
       background: #fef2f2;
       color: #b91c1c;
       font-weight: bold;
@@ -224,6 +224,29 @@
       justify-content: center;
     }
 
+    #themeDropdown {
+      position: absolute;
+      top: 28px;
+      right: 0;
+      list-style: none;
+      margin: 0;
+      padding: 6px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      display: none;
+      z-index: 10;
+    }
+
+    #themeDropdown li {
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+
+    #themeDropdown li:hover {
+      background-color: #f3f4f6;
+    }
+
     @media (max-width: 320px) {
       .info-row, .datetime-row {
         flex-direction: column;
@@ -244,7 +267,15 @@
       <div><span style="font-size: 18px; color: black;">✖</span></div>
       <div>
         <span><a href="#" style="text-decoration: none; color: #000;">Need Help?</a></span>
-        <span><a href="#" style="text-decoration: none; color: #000;">All Passes ☰</a></span>
+        <span style="position: relative;">
+          <a href="#" onclick="toggleDropdown()" style="text-decoration: none; color: #000;">All Passes ☰</a>
+          <ul id="themeDropdown">
+            <li onclick="setTheme('pink')">Pink</li>
+            <li onclick="setTheme('orange')">Orange</li>
+            <li onclick="setTheme('blue')">Blue</li>
+            <li onclick="setTheme('purple')">Purple</li>
+          </ul>
+        </span>
       </div>
     </div>
 
@@ -279,7 +310,6 @@
         </div>
       </div>
 
-      <!-- Timer at base -->
       <div class="timercontainer">
         <div class="timer-label">Expires In</div>
         <div class="timer-box" id="liveTimer">Loading...</div>
@@ -293,7 +323,7 @@
     Show QR Code
   </div>
 
-  <!-- Countdown & Date Script -->
+  <!-- Script Section -->
   <script>
     function updateCountdown() {
       const now = new Date();
@@ -301,7 +331,6 @@
       midnight.setHours(23, 59, 59, 999);
 
       let diff = midnight - now;
-
       if (diff < 0) {
         document.getElementById("liveTimer").textContent = "Expired";
         return;
@@ -333,6 +362,48 @@
 
     setInterval(updateCountdown, 1000);
     updateCountdown();
+
+    // Dropdown color theme change
+    function toggleDropdown() {
+      const dropdown = document.getElementById("themeDropdown");
+      dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+    }
+
+    function setTheme(color) {
+      let bgGradient, cutColor;
+
+      switch (color) {
+        case "orange":
+          bgGradient = "linear-gradient(to bottom, #fdba74, #fed7aa)";
+          cutColor = "#fdba74";
+          break;
+        case "blue":
+          bgGradient = "linear-gradient(to bottom, #93c5fd, #bfdbfe)";
+          cutColor = "#93c5fd";
+          break;
+        case "purple":
+          bgGradient = "linear-gradient(to bottom, #d8b4fe, #e9d5ff)";
+          cutColor = "#d8b4fe";
+          break;
+        default:
+          bgGradient = "linear-gradient(to bottom, #fca5a5, #fecaca)";
+          cutColor = "#fca5a5";
+      }
+
+      document.body.style.background = bgGradient;
+      document.querySelectorAll('.cut-left, .cut-right').forEach(el => {
+        el.style.background = cutColor;
+      });
+
+      toggleDropdown();
+    }
+
+    // Optional: close on outside click
+    window.addEventListener('click', function(e) {
+      if (!e.target.closest('.header-bar')) {
+        document.getElementById("themeDropdown").style.display = "none";
+      }
+    });
   </script>
 </body>
 </html>
